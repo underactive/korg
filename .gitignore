@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+
+# Models (too large for git)
+*.safetensors
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.env
+
+# Generated videos
+*.mp4
+*.webm

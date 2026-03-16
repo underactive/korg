@@ -1,31 +1,49 @@
 #!/bin/bash
 # ============================================================================
-# Download a LoRA to the shared models directory
+# Download a LoRA for Wan2GP
 # ============================================================================
 # Downloads a LoRA file from a URL (CivitAI, HuggingFace, etc.) into
-# /workspace/models/loras/ for use with Wan2GP.
+# the appropriate Wan2GP LoRA directory.
 #
 # Usage:
-#   bash download-lora.sh <url> [filename]
+#   bash download-lora.sh <url> [filename] [--t2v]
+#
+# By default, downloads to loras_i2v/ (I2V mode). Use --t2v for T2V LoRAs.
 #
 # Examples:
-#   bash download-lora.sh "https://civitai.com/api/download/models/12345"
-#   bash download-lora.sh "https://huggingface.co/.../lora.safetensors" my_lora.safetensors
+#   bash download-lora.sh "https://civitai.com/api/download/models/12345?token=KEY"
+#   bash download-lora.sh "https://civitai.com/api/download/models/12345?token=KEY" my_lora.safetensors
+#   bash download-lora.sh "https://huggingface.co/.../lora.safetensors" my_lora.safetensors --t2v
 # ============================================================================
 
 set -euo pipefail
 
-LORA_DIR="/workspace/models/loras"
+WAN2GP_DIR="/workspace/Wan2GP"
+LORA_DIR="${WAN2GP_DIR}/loras_i2v"
 
-if [ $# -lt 1 ]; then
-    echo "Usage: $0 <url> [filename]"
+# Check for --t2v flag
+for arg in "$@"; do
+    if [[ "$arg" == "--t2v" ]]; then
+        LORA_DIR="${WAN2GP_DIR}/loras/14B"
+    fi
+done
+
+# Filter out flags from positional args
+ARGS=()
+for arg in "$@"; do
+    [[ "$arg" != --* ]] && ARGS+=("$arg")
+done
+
+if [ ${#ARGS[@]} -lt 1 ]; then
+    echo "Usage: $0 <url> [filename] [--t2v]"
     echo ""
-    echo "Downloads a LoRA file to ${LORA_DIR}/"
+    echo "Downloads a LoRA to Wan2GP's I2V LoRA directory."
+    echo "Use --t2v to download to the T2V LoRA directory instead."
     exit 1
 fi
 
-URL="$1"
-FILENAME="${2:-$(basename "$URL" | sed 's/?.*//')}"
+URL="${ARGS[0]}"
+FILENAME="${ARGS[1]:-$(basename "$URL" | sed 's/?.*//')}"
 
 mkdir -p "$LORA_DIR"
 
@@ -38,4 +56,4 @@ mv "${LORA_DIR}/${FILENAME}.tmp" "${LORA_DIR}/${FILENAME}"
 
 echo ""
 echo "Downloaded: ${LORA_DIR}/${FILENAME}"
-echo "Load it in Wan2GP's LoRA settings panel."
+echo "Click Refresh in Wan2GP to load it — no restart needed."

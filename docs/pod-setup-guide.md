@@ -57,7 +57,22 @@ bash /workspace/start.sh
 
 The start script auto-reinstalls pip packages if the container was reset, recreates symlinks, and launches Wan2GP.
 
-## 7. Download LoRAs
+## 7. Download LoRAs from CivitAI
+
+### Get your API token (one-time)
+
+1. Go to [civitai.com](https://civitai.com) → click profile icon → **Account Settings**
+2. Scroll to **API Keys** → generate a new key
+3. Save it somewhere — you'll need it for every download
+
+### Find the download URL
+
+1. Go to the model page on CivitAI (e.g. a Wan 2.2 NSFW LoRA)
+2. **Right-click** the download button → **Copy Link Address**
+3. The URL looks like: `https://civitai.com/api/download/models/2847561`
+4. Append your token: `?token=YOUR_TOKEN`
+
+### Download to your pod
 
 ```bash
 bash /workspace/korg/scripts/download-lora.sh \
@@ -65,7 +80,23 @@ bash /workspace/korg/scripts/download-lora.sh \
   lora_name.safetensors
 ```
 
-Then click **Refresh** in Wan2GP UI and select the LoRA.
+This puts the file in `/workspace/Wan2GP/loras_i2v/`. For T2V LoRAs, add `--t2v`.
+
+### Load in Wan2GP
+
+1. Click **Refresh** in the UI (or restart Wan2GP if it doesn't appear)
+2. Select the LoRA from the dropdown
+3. Set the **weight/multiplier** (check the CivitAI page for recommended value, usually 0.8-1.0)
+4. Add the **trigger word** to your prompt if the model requires one (listed on the CivitAI page)
+5. Generate
+
+### Notable LoRAs
+
+| Name | Type | Notes |
+|------|------|-------|
+| WAN General NSFW (CubeyAI) | Style/Concept | Trigger: `nsfwsks`, weight: 0.8 |
+| Instagirl WAN 2.2 | Style | Realistic style |
+| SingularUnity MotionCraft | Motion | Better motion quality, stackable |
 
 ## 8. Download Output Videos
 

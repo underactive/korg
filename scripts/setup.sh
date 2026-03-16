@@ -89,6 +89,9 @@ fi
 
 # --- Step 3: Install Python dependencies ------------------------------------
 
+log "Upgrading PyTorch to 2.5+ (required for torch.nn.Buffer)..."
+pip install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124 2>&1 | tail -3
+
 log "Installing Python dependencies..."
 cd "$WAN2GP_DIR"
 pip install -r requirements.txt 2>&1 | tail -5

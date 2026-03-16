@@ -41,6 +41,7 @@ fi
 # Reinstall deps if needed (container is ephemeral, pip packages may be gone)
 if ! python -c "import gradio" 2>/dev/null; then
     echo "Reinstalling Python dependencies (container was reset)..."
+    pip install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124 2>&1 | tail -3
     cd "$WAN2GP_DIR"
     pip install -r requirements.txt 2>&1 | tail -3
 fi

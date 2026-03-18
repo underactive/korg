@@ -41,7 +41,16 @@ fi
 # Reinstall deps if needed (container is ephemeral, pip packages may be gone)
 if ! python -c "import gradio" 2>/dev/null; then
     echo "Reinstalling Python dependencies (container was reset)..."
-    pip install torch==2.6.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124 2>&1 | tail -3
+
+    # Detect Blackwell GPUs (sm_120) which need PyTorch nightly with cu128
+    GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1)
+    if echo "$GPU_NAME" | grep -qi "blackwell\|RTX PRO 6000\|B200\|B100\|GB200"; then
+        echo "Blackwell GPU detected (${GPU_NAME}) — installing PyTorch nightly..."
+        pip install --pre --force-reinstall torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128 2>&1 | tail -3
+    else
+        pip install torch==2.6.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126 2>&1 | tail -3
+    fi
+
     cd "$WAN2GP_DIR"
     pip install -r requirements.txt 2>&1 | tail -3
 fi

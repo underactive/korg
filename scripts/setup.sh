@@ -89,8 +89,13 @@ fi
 
 # --- Step 3: Install Python dependencies ------------------------------------
 
-log "Upgrading PyTorch to 2.6+ (required for torch.nn.Buffer)..."
-pip install torch==2.6.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124 2>&1 | tail -3
+log "Upgrading PyTorch (required for torch.nn.Buffer)..."
+if echo "$GPU_NAME" | grep -qi "blackwell\|RTX PRO 6000\|B200\|B100\|GB200"; then
+    log "Blackwell GPU detected — installing PyTorch nightly with cu128..."
+    pip install --pre --force-reinstall torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128 2>&1 | tail -3
+else
+    pip install torch==2.6.0 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126 2>&1 | tail -3
+fi
 
 log "Installing Python dependencies..."
 cd "$WAN2GP_DIR"
